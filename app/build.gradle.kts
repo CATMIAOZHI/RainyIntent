@@ -41,11 +41,11 @@ android {
         compose = true
     }
     signingConfigs {
-        release {
-            storeFile file("release.jks")
-            storePassword System.getenv("KEYSTORE_PASSWORD") ?: "android"
-            keyAlias "app"
-            keyPassword System.getenv("KEY_PASSWORD") ?: "android"
+        create("release") {
+            storeFile = file("release.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "android"
+            keyAlias = "app"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "android"
         }
     }
     packaging {
