@@ -20,6 +20,14 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("release.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "android"
+            keyAlias = "app"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "android"
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -39,14 +47,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-    signingConfigs {
-        create("release") {
-            storeFile = file("release.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "android"
-            keyAlias = "app"
-            keyPassword = System.getenv("KEY_PASSWORD") ?: "android"
-        }
     }
     packaging {
         resources {
