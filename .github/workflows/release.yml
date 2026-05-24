@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35 build-tools;35.0.0'
+
+      - name: Generate Keystore
+        run: |
+          keytool -genkey -v -keystore release.jks -alias app \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass android -keypass android \
+            -dname "CN=RainyIntent" -noprompt
+
+      - name: Fix Gradle Wrapper (ARM64 safeguard)
+        run: |
+          sed -i 's|file://.*gradle-.*-bin.zip|https://services.gradle.org/distributions/gradle-9.1.0-bin.zip|' gradle/wrapper/gradle-wrapper.properties
+
+      - run: chmod +x gradlew
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Rename APK
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/}"
+          cp app/build/outputs/apk/release/app-release.apk "RainyIntent-${VERSION}.apk"
+
+      - name: Create Release & Upload APK
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "🎉 RainyIntent ${{ github.ref_name }}"
+          body: |
+            ## 🐱 雨晴跳转 ${{ github.ref_name }}
+
+            - 轻量级 Intent 链接跳转工具
+            - 支持 `intent://` scheme 解析与自动跳转
+            - 目标 APP 未安装时自动回退浏览器
+            - 元气樱粉 Material3 UI
+          files: RainyIntent-${{ github.ref_name }}.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

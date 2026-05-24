@@ -1,203 +1,175 @@
-# Operit Android 项目
+# 🐱 雨晴跳转 (RainyIntent)
 
-这是一个基于 **Jetpack Compose** 的现代化 Android 应用开发模板。
+> 轻量级 Android Intent 链接跳转工具 —— 解析 `intent://` scheme，自动跳转目标 APP，元气猫系风格 🎀
 
-## 🚀 项目特性
+[![Release](https://img.shields.io/github/v/release/CATMIAOZHI/RainyIntent?label=Release&color=FF85A2)](https://github.com/CATMIAOZHI/RainyIntent/releases)
+[![License](https://img.shields.io/github/license/CATMIAOZHI/RainyIntent?color=FF6B8E)](./LICENSE)
+[![Android](https://img.shields.io/badge/Android-7.0%2B-brightgreen?logo=android)](https://developer.android.com/)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.3%2B-blueviolet?logo=kotlin)](https://kotlinlang.org/)
+[![Compose](https://img.shields.io/badge/Jetpack%20Compose-latest-blue?logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
 
-✅ **Jetpack Compose** - 现代化声明式 UI 框架  
-✅ **Material Design 3** - 最新设计规范  
-✅ **Kotlin** - 100% Kotlin 编写  
-✅ **Gradle Version Catalog** - 统一依赖管理  
-✅ **开箱即用** - 包含完整项目结构  
+雨晴跳转是一个专为解决 `intent://` scheme 跳转痛点而生的 Android 小工具。粘贴一条 `intent://` 链接，它自动解析出目标 APP 和参数，帮你无缝跳转；如果目标 APP 未安装，还会自动用浏览器打开备用链接。
+
+---
+
+## ✨ 功能特性
+
+| 功能 | 说明 |
+|------|------|
+| 🔗 Intent 解析 | 自动解析 `intent://` scheme，提取 `scheme`、`package`、`S.browser_fallback_url` 等参数 |
+| 🚀 智能跳转 | 优先唤起目标 APP，失败时自动回退到浏览器打开 |
+| 📋 一键粘贴 | 从剪贴板读取链接，无需手动输入 |
+| 🌐 外部唤起 | 支持接收外部 `intent://` 链接，直接唤醒 APP 并跳转 |
+| 🎨 元气猫系 UI | 樱粉渐变配色，Material Design 3，Jetpack Compose 实现 |
+| 🌙 暗色模式 | 柔和暗粉配色，夜晚不刺眼 |
+| 📱 Android 7.0+ | 最低支持 API 24，覆盖绝大部分设备 |
+
+---
+
+## 📦 下载
+
+前往 [Releases](https://github.com/CATMIAOZHI/RainyIntent/releases) 页面下载最新 APK。
+
+---
+
+## 🏗️ 技术架构
+
+```
+┌─────────────────────────────────┐
+│          MainActivity            │
+│  ┌───────────────────────────┐  │
+│  │   handleIncomingIntent()  │  │  接收外部 intent://
+│  │         ↓                  │  │
+│  │   parseAndDispatch()      │  │  解析 URI 参数
+│  │         ↓                  │  │
+│  │   dispatchToTarget()      │  │  启动目标 APP
+│  │         ↓ (fallback)       │  │
+│  │   browser fallback URL    │  │  浏览器备用
+│  └───────────────────────────┘  │
+│                                  │
+│  UI: Jetpack Compose             │
+│  Theme: Rainy Sakura Pink 🌸     │
+└─────────────────────────────────┘
+```
+
+- **UI 层**：Jetpack Compose + Material3
+- **逻辑层**：`Intent#parseUri` + `PackageManager#resolveActivity`
+- **主题**：自研「雨晴樱粉」配色方案，支持亮色 / 暗色
+
+---
 
 ## 📁 项目结构
 
 ```
-android-project/
+Rainyintent/
 ├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/java/myapplication/
-│   │   │   │   ├── MainActivity.kt          # 主Activity
-│   │   │   │   └── ui/theme/
-│   │   │   │       ├── Color.kt             # 颜色定义
-│   │   │   │       ├── Theme.kt             # 主题配置
-│   │   │   │       └── Type.kt              # 字体配置
-│   │   │   ├── res/                         # 资源文件
-│   │   │   └── AndroidManifest.xml          # 应用清单
-│   │   ├── androidTest/                     # Android测试
-│   │   └── test/                            # 单元测试
-│   ├── build.gradle.kts                     # App模块配置
-│   └── proguard-rules.pro                   # 混淆规则
+│   ├── src/main/
+│   │   ├── java/com/java/myapplication/
+│   │   │   ├── MainActivity.kt              # 核心：Intent 解析与跳转
+│   │   │   └── ui/
+│   │   │       ├── screen/
+│   │   │       │   └── AboutScreen.kt       # 关于页面
+│   │   │       └── theme/
+│   │   │           ├── Color.kt             # 雨晴樱粉配色定义
+│   │   │           ├── Theme.kt             # Material3 主题配置
+│   │   │           └── Type.kt              # 字体配置
+│   │   ├── res/                             # 资源文件
+│   │   └── AndroidManifest.xml              # Intent Filter 配置
+│   └── build.gradle.kts                     # App 模块配置
 ├── gradle/
-│   ├── libs.versions.toml                   # 依赖版本管理
-│   └── wrapper/                             # Gradle Wrapper
+│   └── libs.versions.toml                   # Version Catalog 依赖管理
 ├── build.gradle.kts                         # 项目级配置
-├── settings.gradle.kts                      # 项目设置
-├── gradle.properties                        # Gradle属性
-├── gradlew / gradlew.bat                    # Gradle命令
-└── .gitignore                               # Git忽略
+├── settings.gradle.kts
+└── gradlew / gradlew.bat                    # Gradle Wrapper
 ```
+
+---
 
 ## 🛠️ 快速开始
 
-### 1. 环境要求
-- ✅ **JDK 17+**（必需）
-- ✅ **Gradle** (已包含 Wrapper)
-- ✅ **Android SDK** (可选，用于完整编译)
+### 方式一：Android Studio（推荐）
 
-### 2. 构建项目
+1. 克隆仓库：`git clone https://github.com/CATMIAOZHI/RainyIntent.git`
+2. 用 Android Studio 打开项目
+3. 等待 Gradle 同步完成
+4. 运行到设备或模拟器
 
-#### 使用 Operit 内置命令按钮
-- 🔧 **初始化 Gradle Wrapper** - 首次使用
-- 🔨 **构建项目** - 编译整个项目
-- 🧹 **清理构建** - 清理构建缓存
-- 📋 **查看所有任务** - 列出可用任务
-
-#### 命令行方式
-```bash
-# Linux/Mac
-./gradlew build              # 构建项目
-./gradlew assembleDebug      # 打包Debug APK
-./gradlew installDebug       # 安装到设备
-./gradlew clean              # 清理构建
-
-# Windows
-gradlew.bat build
-gradlew.bat assembleDebug
-```
-
-### 3. 生成的APK位置
-```
-app/build/outputs/apk/debug/app-debug.apk
-```
-
-## 📦 依赖管理
-
-项目使用 **Gradle Version Catalog** 统一管理依赖版本。
-
-### 查看当前依赖
-在 `gradle/libs.versions.toml` 中定义：
-
-```toml
-[versions]
-agp = "9.0.0"
-kotlin = "2.3.10"
-composeBom = "2026.01.01"
-
-[libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-```
-
-### 添加新依赖
-1. 在 `gradle/libs.versions.toml` 中添加版本和库定义
-2. 在 `app/build.gradle.kts` 中引用：
-   ```kotlin
-   dependencies {
-       implementation(libs.your.library.name)
-   }
-   ```
-
-## 🎨 自定义应用
-
-### 修改应用名称
-编辑 `app/src/main/res/values/strings.xml`：
-```xml
-<string name="app_name">你的应用名</string>
-```
-
-### 修改包名
-1. 更新 `app/build.gradle.kts` 中的 `namespace` 和 `applicationId`
-2. 重命名 `java/com/java/myapplication` 目录结构
-3. 更新 `AndroidManifest.xml` 中的包名引用
-
-### 修改主题颜色
-编辑 `app/src/main/java/.../ui/theme/Color.kt`：
-```kotlin
-val Purple80 = Color(0xFFD0BCFF)  // 修改为你的颜色
-```
-
-## 📱 Compose 示例
-
-当前 `MainActivity.kt` 包含一个简单的 Greeting 示例：
-
-```kotlin
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-```
-
-你可以：
-- 添加更多 Composable 函数
-- 使用 Material3 组件
-- 实现导航（推荐使用 Navigation Compose）
-- 集成 ViewModel、Repository 等架构组件
-
-## 🔧 常用 Gradle 任务
+### 方式二：命令行
 
 ```bash
-./gradlew tasks              # 查看所有可用任务
-./gradlew clean              # 清理构建
-./gradlew build              # 完整构建
-./gradlew assembleDebug      # 构建Debug APK
-./gradlew assembleRelease    # 构建Release APK
-./gradlew installDebug       # 安装Debug到设备
-./gradlew test               # 运行单元测试
-./gradlew connectedAndroidTest # 运行Android测试
+git clone https://github.com/CATMIAOZHI/RainyIntent.git
+cd Rainyintent
+./gradlew assembleDebug
+# APK 输出：app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## 📝 注意事项
+<details>
+<summary>🖥️ ARM64 Linux 环境（非必需）</summary>
 
-⚠️ **关于 Android SDK**  
-- 此模板可以在 Operit 的 Ubuntu 环境中构建
-- 完整编译需要安装 Android SDK
-- 推荐使用 Android Studio 进行完整开发
+如果在 ARM64 Linux（如 Proot）环境下构建，需要替换 AAPT2：
 
-### ⚠️ ARM64 环境 AAPT2 替换（模板已内置）
-
-Gradle 会自动从 Google Maven 下载 AAPT2，但官方分发在 ARM64 Linux 环境下不可直接使用。
-此模板已经内置 ARM64 `aapt2`，`setup_android_env.sh` 会自动把它替换到 SDK build-tools 和 Gradle 缓存里。
-
-**模板内置来源**：
-- Release: https://github.com/ReVanced/aapt2/releases/tag/v1.0.0
-- ARM64 aapt2: https://github.com/ReVanced/aapt2/releases/download/v1.0.0/aapt2-arm64-v8a
-- SHA-256: `e5b5ff7f0d4f6ecd7fa5d05d77fed3f09f6f1bf80f078b8aada82bc578848561`
-
-**你只需要执行**
 ```bash
 chmod +x ./setup_android_env.sh
 ./setup_android_env.sh
 ```
 
-脚本会自动完成：
-- 替换 `$ANDROID_SDK/build-tools/35.0.0/aapt2`
-- 替换 `~/.gradle/caches/modules-2/files-2.1/com.android.tools.build/aapt2` 下的 jar 内二进制
-- 替换 `~/.gradle/caches/transforms-*` 中已经解压出来的 `aapt2`
+脚本会自动从项目内置 `tools/aapt2/` 替换 SDK 和 Gradle 缓存中的 AAPT2 二进制文件。
 
-⚠️ **关于包名**  
-- 默认包名为 `com.java.myapplication`
-- 发布前请修改为你的唯一包名
+</details>
 
-⚠️ **关于签名**  
-- Debug 版本自动使用调试签名
-- Release 版本需要配置签名密钥
+---
 
-## 🌐 相关资源
+## 📦 依赖管理
 
-- [Jetpack Compose 官方文档](https://developer.android.com/jetpack/compose)
-- [Material Design 3](https://m3.material.io/)
-- [Android 开发者指南](https://developer.android.com/)
-- [Kotlin 官方文档](https://kotlinlang.org/)
+项目使用 **Gradle Version Catalog** (`gradle/libs.versions.toml`) 管理依赖：
 
-## 💡 提示
+| 依赖 | 版本 |
+|------|------|
+| AGP | 9.0.0 |
+| Kotlin | 2.3.10 |
+| Compose BOM | 2026.01.01 |
+| Material3 | (via BOM) |
+| compileSdk | 35 |
+| minSdk | 24 |
 
-- 使用 `./gradlew --scan` 可以查看详细的构建分析
-- 使用 `./gradlew build --info` 查看详细构建日志
-- 修改 `gradle.properties` 可以调整构建性能
+---
 
-Happy Coding! 🤖✨
+## 🔒 安全说明
+
+- 本应用仅解析和转发 Intent URI，**不收集任何用户数据**
+- 不请求网络权限、存储权限等敏感权限
+- 不包含任何遥测、统计或第三方 SDK
+- 所有处理均在本地完成，无数据外传
+
+---
+
+## 🎨 自定义
+
+修改 `app/src/main/res/values/strings.xml` 更改应用名称：
+
+```xml
+<string name="app_name">你的应用名</string>
+```
+
+修改 `app/build.gradle.kts` 中的 `applicationId` 更改包名。
+
+主题颜色定义在 `app/src/main/java/.../ui/theme/Color.kt`。
+
+---
+
+## 🐱 关于
+
+雨晴跳转是「雨晴喵」系列应用的一员，由雨晴喵设计开发。
+
+- 🐱 雨晴喵 — 核心开发 & 设计
+- 🔗 GitHub：https://github.com/CATMIAOZHI/RainyIntent
+
+---
+
+## 📄 License
+
+MIT License. 详见 [LICENSE](./LICENSE) 文件。
+
+---
+
+<p align="center">💖 Made with love by 雨晴喵</p>
