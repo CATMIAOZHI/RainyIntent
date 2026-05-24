@@ -22,18 +22,11 @@ jobs:
         with:
           packages: 'platforms;android-35 build-tools;35.0.0'
 
-      - name: Generate Keystore
-        run: |
-          keytool -genkey -v -keystore release.jks -alias app \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -storepass android -keypass android \
-            -dname "CN=RainyIntent" -noprompt
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > release.jks
 
-      - name: Fix Gradle Wrapper (ARM64 safeguard)
-        run: |
-          sed -i 's|file://.*gradle-.*-bin.zip|https://services.gradle.org/distributions/gradle-9.1.0-bin.zip|' gradle/wrapper/gradle-wrapper.properties
-
-      - run: chmod +x gradlew
+      - name: Grant Gradlew Permission
+        run: chmod +x gradlew
 
       - name: Build Release APK
         run: ./gradlew assembleRelease
